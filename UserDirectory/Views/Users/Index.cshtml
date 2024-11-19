@@ -1,1 +1,30 @@
-﻿
+﻿@model IEnumerable<UserDirectory.Models.Users>
+
+<h2>List of Users</h2>
+<table>
+    <thead>
+        <tr>
+            <th>User ID</th>
+            <th>First Name</th>
+            <th>Postal Address</th>
+            <th>City</th>
+            <th>Country</th>
+            <th>ZipCode</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserID</td>
+                <td>@user.FirstName</td>
+                <td>@user.PostalAddress</td>
+                <td>@user.City</td>
+                <td>@user.Country</td>
+                <td>@user.ZipCode</td>
+                <td>@Html.ActionLink("Details", "Details", new {ID = user.UserID })</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -26,7 +26,7 @@ namespace UserDirectory.Controllers
         // Action to view details of a specific city
         public ActionResult Details(int id)
         {
-
+            return id
         }
 
     }
