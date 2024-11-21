@@ -103,14 +103,44 @@ namespace UserDirectory.Services
         //SQL Update method
 
         public bool UpdateUser(Users users) 
-        { 
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "UPDATE Users SET FirstName = @FirstName, PostalAddress = @PostalAddress, " +
+                    "City = @City, Country = @Country, ZipCode = @ZipCode WHERE UserID = @UserID";
 
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue(@"FirstName", users.FirstName);
+                    command.Parameters.AddWithValue(@"PostalAddress", users.PostalAddress);
+                    command.Parameters.AddWithValue(@"City", users.City);
+                    command.Parameters.AddWithValue(@"Country", users.Country);
+                    command.Parameters.AddWithValue(@"FirstName", users.ZipCode);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
         }
 
         public bool DeleteUser(Users users)
         {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                
+                string query = "DELETE FROM Users WHERE UserID = @UserID";
 
-        }
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserID", users.UserID);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    return rowsAffected > 0;  // Returns true if deletion was successful
+                }
+            }
+            
 
 
 
