@@ -45,15 +45,17 @@ namespace UserDirectory.Services
             return users;
         }
 
-        public List<Users> GetUserByCity(string city)
+        public List<Users> GetUsersByFilter(string columnName, string filterValue)
         {
             var users = new List<Users>();
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                using (var command = new SqlCommand("SELECT * FROM Users WHERE City = @City"))
+                string query = "SELECT * FROM Users WHERE {columnName} = @FilterValue";
+
+                using(var command = new SqlCommand(query,connection))
                 {
-                    command.Parameters.AddWithValue("@City", city);
+                    command.Parameters.AddWithValue("@FilterValue", filterValue);
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -66,83 +68,51 @@ namespace UserDirectory.Services
                                 City = reader.GetString(3),
                                 Country = reader.GetString(4),
                                 ZipCode = reader.GetString(5),
-                            });
 
+                            });
                         }
                     }
                 }
-                
             }
             return users;
         }
 
-        public List<Users> GetUsersByCountry(string country)
+        // SQL Insert method
+        public bool AddUser(Users users)
         {
-            var users = new List<Users>();
-
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "SELECT UserID, FirstName, PostalAddress, City, Country, " +
-                    "ZipCode FROM Users WHERE Country = @Country";
+                string query = "INSERT INTO Users (FirstName, PostalAddress, City, Country, ZipCode) " + 
+                    "VALUES (@FirstName, @PostalAddress, @City, @Country, @ZipCode)";
 
                 using (var command =  new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Country", country);
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            users.Add(new Users
-                            {
-                                UserID = reader.GetInt32(0),
-                                FirstName = reader.GetString(1),
-                                PostalAddress = reader.GetString(2),
-                                City = reader.GetString(3),
-                                Country = reader.GetString(4),
-                                ZipCode = reader.GetString(5)
-                            });
-                        }
-                    }
+                    command.Parameters.AddWithValue(@"FirstName", users.FirstName);
+                    command.Parameters.AddWithValue(@"PostalAddress", users.PostalAddress);
+                    command.Parameters.AddWithValue(@"City", users.City);
+                    command.Parameters.AddWithValue(@"Country", users.Country) ;
+                    command.Parameters.AddWithValue(@"FirstName", users.ZipCode);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    return rowsAffected > 0;
                 }
-            
             }
-            return users;
         }
 
-        public List<Users> GetUserByZipCode(string zipCode)
+        //SQL Update method
+
+        public bool UpdateUser(Users users) 
+        { 
+
+        }
+
+        public bool DeleteUser(Users users)
         {
-            var users = new List<Users>();
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "SELECT UserID, FirstName, PostalAddress, City, Country, " +
-                    "ZipCode FROM Users WHERE Country = @Country";
-
-                using (var command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@ZipCode", zipCode);
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            users.Add(new Users
-                            {
-                                UserID = reader.GetInt32(0),
-                                FirstName = reader.GetString(1),
-                                PostalAddress = reader.GetString(2),
-                                City = reader.GetString(3),
-                                Country = reader.GetString(4),
-                                ZipCode = reader.GetString(5)
-                            });
-                        }
-                    }
-                }
-
-            }
-            return users;
 
         }
+
+
+
     }
 }
